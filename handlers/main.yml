@@ -1,0 +1,8 @@
+- name: restart rke2
+  vars:
+    _service_name: "rke2-{{ 'server' if app.value.kubernetes.configs.type == 'master' else 'agent' }}"
+  service:
+    name: "{{ _service_name }}"
+    state: restarted
+  become: true
+  become_user: root

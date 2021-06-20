@@ -1,0 +1,22 @@
+---
+- name: deb
+  debug:
+    msg: "tu jestem"
+- name: stat consul shared dir
+  stat:
+    path: /app/shared/consul/conf
+  register: _consul_dir
+
+- block:
+    - name: copy consul discovery script
+      template:
+        src: consul_discovery.json
+        dest: "/app/shared/consul/conf/kubernetes-{{ app.key }}.json"
+        mode: 0644
+    - name: wait for consul to reload config
+      pause:
+        seconds: 2
+  when: _consul_dir.stat.isdir|default(False)
+
+  become: true
+  become_user: root

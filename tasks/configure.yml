@@ -1,0 +1,59 @@
+---
+- name: look for existing clusters
+  command: "dig kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-apiserver.service.consul +short"
+  changed_when: false
+  check_mode: false
+  register: _kubernetes_nodes
+
+- name: debug existing
+  debug:
+    msg: "{{ _kubernetes_cluster_exists }}"
+
+- name: set cluster exists flag if it registered in consul
+  set_fact:
+    _kubernetes_cluster_exists: true
+  when: _kubernetes_nodes.stdout|length > 0
+
+- name: temporary assert that there are no external cluster
+  assert:
+    that:
+      - "{{ _kubernetes_nodes.stdout|length == 0 }}"
+  when: not _kubernetes_cluster_exists and app.value.kubernetes.configs.type == "master"
+- block:
+    - name: assert that cluster is registered in consul
+      assert:
+        that:
+          - "{{ _kubernetes_nodes.stdout|length > 0 }}"
+        fail_msg: "Cluster not bootstrapped"
+    - name: read existing token
+      command: "cat /var/lib/rancher/rke2/server/node-token"
+      check_mode: false
+      changed_when: false
+      run_once: true
+      register: _node_token
+      delegate_to: "{{ (_kubernetes_nodes.stdout_lines|sort)[0] }}"
+    - name: deb token
+      debug:
+        msg: "{{ _node_token }}"
+  when: _kubernetes_cluster_exists
+
+- block:
+    - name: copy config
+      template:
+        src: config.yaml.j2
+        dest: /etc/rancher/rke2/config.yaml
+        mode: 0640
+      notify:
+        - restart rke2
+
+
+    - include_tasks: start_kubernetes.yml
+      loop: "{{ ansible_play_batch }}"
+      loop_control:
+        loop_var: _loop_host
+      when: inventory_hostname == _loop_host
+
+    - name: set flag about existing cluster
+      set_fact:
+        _kubernetes_cluster_exists: true
+      run_once: true

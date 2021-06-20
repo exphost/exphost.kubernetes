@@ -1,0 +1,46 @@
+---
+- block:
+    - name: wait for node to be ready
+      vars:
+        _url: "https://kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-apiserver.service.consul:6443"
+        _kubectl: "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml"
+        _node_type: "{{ app.value.kubernetes.configs.type }}"
+        _delegate_node: "{{ _kubernetes_nodes.stdout_lines[0] if _node_type == 'worker' else inventory_hostname }}"
+      shell: "{{ _kubectl }} -s {{ _url }} get nodes {{ ansible_fqdn }}|cat"
+      changed_when: false
+      ignore_errors: true
+      register: _get_nodes
+      check_mode: false
+      until: '" Ready" in _get_nodes.stdout|default("")'
+      retries: 60
+      delegate_to: "{{ _delegate_node }}"
+    - block:
+        - name: restart rke-server
+          service:
+            name: rke2-server
+            state: restarted
+          when: app.value.kubernetes.configs.type == "master"
+
+        - name: restart rke-agent
+          service:
+            name: rke2-agent
+            state: restarted
+          when: app.value.kubernetes.configs.type == "worker"
+
+        - name: wait for node to be ready
+          vars:
+            _url: "https://kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-apiserver.service.consul:6443"
+            _kubectl: "/var/lib/rancher/rke2/bin/kubectl --kubeconfig /etc/rancher/rke2/rke2.yaml"
+            _node_type: "{{ app.value.kubernetes.configs.type }}"
+            _delegate_node: "{{ _kubernetes_nodes.stdout_lines[0] if _node_type == 'worker' else inventory_hostname }}"
+          shell: "{{ _kubectl }} -s {{ _url }} get nodes {{ ansible_fqdn }}|cat"
+          changed_when: false
+          ignore_errors: true
+          check_mode: false
+          register: _get_nodes
+          until: '" Ready" in _get_nodes.stdout|default("")'
+          retries: 60
+          delegate_to: "{{ _delegate_node }}"
+      when: _get_nodes.failed|default(false)
+  become: true
+  become_user: root

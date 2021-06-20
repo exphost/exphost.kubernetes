@@ -1,0 +1,10 @@
+---
+{% if _kubernetes_cluster_exists %}
+server: https://kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-rke2.service.consul:9345
+token: {{ _node_token.stdout }}
+{% endif %}
+{% if app.value.kubernetes.configs.type == "master" %}
+tls-san:
+  - kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-rke2.service.consul
+  - kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-apiserver.service.consul
+{% endif %}

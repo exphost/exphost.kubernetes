@@ -1,0 +1,26 @@
+---
+- block:
+
+    - name: flush handlers
+      meta: flush_handlers
+
+    - name: start rke-server
+      service:
+        name: rke2-server
+        state: started
+        enabled: true
+      when: app.value.kubernetes.configs.type == "master"
+      register: _server_started
+    - debug:
+        msg: "{{ _server_started }}"
+
+    - name: start rke-agent
+      service:
+        name: rke2-agent
+        state: started
+        enabled: true
+      when: app.value.kubernetes.configs.type == "worker"
+
+    - include_tasks: wait_for_node.yml
+  become: true
+  become_user: root

@@ -1,0 +1,42 @@
+{
+  "services": [
+{% if app.value.kubernetes.configs.type == "master" %}
+  {
+    "name": "kubernetes-{{app.value.kubernetes.configs.cluster_name}}-rke2",
+    "tags": ["kubernetes"],
+    "port": 9345,
+    "checks": [
+    {
+      "tcp": "localhost:9345",
+      "interval": "5s",
+      "timeout": "1s"
+    }
+    ]
+  },
+  {
+    "name": "kubernetes-{{app.value.kubernetes.configs.cluster_name}}-apiserver",
+    "tags": ["kubernetes"],
+    "port": 6443,
+    "checks": [
+    {
+      "tcp": "localhost:6443",
+      "interval": "5s",
+      "timeout": "1s"
+    }
+    ]
+  },
+{% endif %}
+  {
+    "name": "kubernetes-{{app.value.kubernetes.configs.cluster_name}}-kubelet",
+    "tags": ["kubernetes"],
+    "port": 10250,
+    "checks": [
+    {
+      "tcp": "localhost:10250",
+      "interval": "5s",
+      "timeout": "1s"
+    }
+    ]
+  }
+  ]
+}

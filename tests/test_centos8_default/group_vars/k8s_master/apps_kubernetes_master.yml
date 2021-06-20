@@ -1,0 +1,9 @@
+apps_kube_master:
+  kube_master:
+    priority: 6
+    kubernetes:
+      type: exphost.kubernetes
+      enabled: True
+      configs:
+        type: master
+        cluster_name: pierwszy

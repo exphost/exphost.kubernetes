@@ -1,0 +1,46 @@
+---
+- name: debug
+  debug:
+    msg: "Jeste kubernetese"
+- name: set default flags
+  set_fact:
+    _kubernetes_cluster_exists: false
+
+- include_tasks: consul_discovery.yml
+
+- block:
+    - include_tasks: "install.yml"
+
+    # if node token exists, the node is part of a cluster
+    - name: look for node-token
+      stat:
+        path: /var/lib/rancher/rke2/server/node-token
+      register: _node_token_stat
+
+    - block:
+        - name: start existing cluster
+          service:
+            name: rke2-server
+            state: started
+
+        - include_tasks: wait_for_node.yml
+
+        - name: set flag about existing cluster
+          set_fact:
+            _kubernetes_cluster_exists: true
+          run_once: true
+
+      when: _node_token_stat.stat.exists
+
+    - debug:
+        msg: "bb"
+    - include_tasks: "configure.yml"  # bootstrap
+      when: not _kubernetes_cluster_exists and app.value.kubernetes.configs.type == "master"
+      run_once: true
+    - debug:
+        msg: "bb"
+    - include_tasks: "configure.yml"  # configure rest of nodes
+
+
+  become: true
+  become_user: root
