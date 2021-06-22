@@ -14,7 +14,7 @@ iac:
         name: exphost.instances_libvirt
         configs:
           uri: "{{ lookup('env', 'QEMU_URI')|default('qemu:///system', true) }}"
-      type: medium
+      type: large
       disks:
         - name: sda
           pool: default
@@ -67,7 +67,7 @@ iac:
             provision:provision
           expire: False
     k8s_worker:
-      count: 3
+      count: 1
       roles:
         - consul_client
         - k8s_worker
@@ -78,7 +78,7 @@ iac:
         name: exphost.instances_libvirt
         configs:
           uri: "{{ lookup('env', 'QEMU_URI')|default('qemu:///system', true) }}"
-      type: small
+      type: large
       disks:
         - name: sda
           pool: default

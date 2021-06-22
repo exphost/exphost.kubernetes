@@ -33,5 +33,20 @@
         path: /etc/rancher/rke2/
         state: directory
         mode: 0755
+
+    - block:
+        - name: install iscsi-initiator-utils if needed
+          yum:
+            name: iscsi-initiator-utils
+            state: present
+
+        - name: start iscsi
+          service:
+            name: iscsid
+            state: started
+            enabled: true
+      vars:
+        _kube_master: "{{ hostvars|dict2items|get_kubernetes_master(app.value.kubernetes.configs.cluster_name) }}"
+      when: _kube_master['kubernetes']['configs']['features']['longhorn']['enabled']|default(false)
   become: true
   become_user: root

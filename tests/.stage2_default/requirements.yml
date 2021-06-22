@@ -9,3 +9,5 @@ roles:
     version: v1.1.2
   - name: exphost.consul
     version: v1.1.2
+  - name: exphost.download
+    version: v1.1.0

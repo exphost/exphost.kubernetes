@@ -16,3 +16,15 @@ galaxy_info:
     - rke2
 
 allow_duplicates: true
+dependencies:
+  - role: exphost.download
+    vars:
+      downloads:
+        - src:
+            type: url
+            url:
+              path: "https://get.helm.sh/helm-v3.6.1-linux-amd64.tar.gz"
+            unpack: true
+          dest:
+            path: /root/helm
+    when: app.value.kubernetes.configs.type == "master"

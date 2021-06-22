@@ -12,7 +12,7 @@
       register: _get_nodes
       check_mode: false
       until: '" Ready" in _get_nodes.stdout|default("")'
-      retries: 60
+      retries: 30
       delegate_to: "{{ _delegate_node }}"
     - block:
         - name: restart rke-server
@@ -39,7 +39,7 @@
           check_mode: false
           register: _get_nodes
           until: '" Ready" in _get_nodes.stdout|default("")'
-          retries: 60
+          retries: 30
           delegate_to: "{{ _delegate_node }}"
       when: _get_nodes.failed|default(false)
   become: true

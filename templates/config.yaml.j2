@@ -7,4 +7,12 @@ token: {{ _node_token.stdout }}
 tls-san:
   - kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-rke2.service.consul
   - kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-apiserver.service.consul
+node-taint:
+  - "CriticalAddonsOnly=:NoSchedule"
+{% endif %}
+{% if app.value.kubernetes.configs.labels|default(false) %}
+node-label:
+{%   for label in app.value.kubernetes.configs.labels %}
+  - "{{ label }}"
+{%   endfor %}
 {% endif %}

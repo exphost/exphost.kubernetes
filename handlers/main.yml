@@ -1,3 +1,4 @@
+---
 - name: restart rke2
   vars:
     _service_name: "rke2-{{ 'server' if app.value.kubernetes.configs.type == 'master' else 'agent' }}"

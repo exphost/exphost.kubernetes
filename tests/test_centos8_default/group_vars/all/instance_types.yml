@@ -6,3 +6,6 @@ instance_types:
   medium:
     cpu: 2
     memory: 2048
+  large:
+    cpu: 4
+    memory: 4096

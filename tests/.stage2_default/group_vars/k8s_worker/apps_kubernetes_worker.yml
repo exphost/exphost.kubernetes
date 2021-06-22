@@ -7,3 +7,5 @@ apps_kube_worker:
       configs:
         type: worker
         cluster_name: pierwszy
+        labels:
+          - "longhorn=yes"

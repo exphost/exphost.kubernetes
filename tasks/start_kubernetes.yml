@@ -11,8 +11,6 @@
         enabled: true
       when: app.value.kubernetes.configs.type == "master"
       register: _server_started
-    - debug:
-        msg: "{{ _server_started }}"
 
     - name: start rke-agent
       service:

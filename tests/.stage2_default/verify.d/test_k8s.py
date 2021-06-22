@@ -10,7 +10,7 @@ def kubectl_cmd(host, cmd):
         )
     return kubectl[(host,cmd)]
 def test_nodes_count(host):
-    assert len(kubectl_cmd(host, "get nodes")['stdout_lines']) == 7
+    assert len(kubectl_cmd(host, "get nodes")['stdout_lines']) == 5
 
 def test_nodes_ready(host):
     assert "NotReady" not in kubectl_cmd(host, "get nodes")['stdout']

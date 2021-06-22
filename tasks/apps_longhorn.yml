@@ -1,0 +1,45 @@
+---
+- name: install longhorn
+  community.kubernetes.helm:
+    name: longhorn
+    chart_ref: https://github.com/longhorn/charts/releases/download/longhorn-1.1.1/longhorn-1.1.1.tgz
+    release_namespace: longhorn-system
+    create_namespace: true
+    values:
+      longhornManager:
+        nodeSelector:
+          longhorn: "yes"
+      persistence:
+        defaultClassReplicaCount: 1
+    wait: true
+    binary_path: "{{ _kube_master['kubernetes']['info']['helm_path'] }}"
+    kubeconfig: "{{ _kube_master['kubernetes']['info']['kubeconfig'] }}"
+
+- name: create extra storage classes
+  k8s:
+    state: present
+    kubeconfig: "{{ _kube_master['kubernetes']['info']['kubeconfig'] }}"
+    definition:
+      apiVersion: storage.k8s.io/v1
+      allowVolumeExpansion: true
+      kind: StorageClass
+      metadata:
+        name: "longhorn-{{ _class.name }}"
+      parameters:
+        numberOfReplicas: "{{ _class.replicas }}"
+        staleReplicaTimeout: "30"
+      provisioner: driver.longhorn.io
+      reclaimPolicy: "{{ _class.reclaim }}"
+      volumeBindingMode: Immediate
+  with_items:
+    - name: replica3-delete
+      replicas: 3
+      reclaim: Delete
+    - name: replica3-retain
+      replicas: 3
+      reclaim: Retain
+    - name: replica1-retain
+      replicas: 1
+      reclaim: Retain
+  loop_control:
+    loop_var: _class
