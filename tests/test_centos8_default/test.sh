@@ -4,9 +4,9 @@ LIST=0
 result=0
 trap 'result=1' ERR
 function usage {
-    echo "Usage: $0 [-l] [-r <stage/all>]"
+    echo "Usage: $0 [-l] [-r <stage/all>] [-a]"
 }
-while getopts ":lr:a" opt; do
+while getopts ":lr:af" opt; do
   case ${opt} in
     l )
         LIST=1
@@ -33,39 +33,39 @@ if [ -z "$STEP" ]; then
     usage
 fi
 if [ "$STEP" == "prepare" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo prepare || ./prepare_env.sh
+    [ $LIST -eq 1 ] && echo prepare haltOnFailure || ./prepare_env.sh
 fi
 if [ "$STEP" == "dependency" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo dependency || bash -c "source venv/bin/activate && ./dependency.sh"
+    [ $LIST -eq 1 ] && echo dependency haltOnFailure || bash -c "source venv/bin/activate && ./dependency.sh"
 fi
 if [ "$STEP" == "lint" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo lint || bash -c "source venv/bin/activate && ./lint.sh"
+    [ $LIST -eq 1 ] && echo lint haltOnFailure || bash -c "source venv/bin/activate && ./lint.sh"
 fi
 if [ "$STEP" == "converge" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo converge || bash -c "source venv/bin/activate && ./converge.sh"
+    [ $LIST -eq 1 ] && echo converge haltOnFailure || bash -c "source venv/bin/activate && ./converge.sh"
 fi
 if [ "$STEP" == "converge2" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo converge2 || bash -c "source venv/bin/activate && ./converge.sh"
+    [ $LIST -eq 1 ] && echo converge2 haltOnFailure || bash -c "source venv/bin/activate && ./converge.sh"
 fi
 if [ "$STEP" == "idempotency" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo idempotency || bash -c "source venv/bin/activate && ./idempotency.sh"
+    [ $LIST -eq 1 ] && echo idempotency haltOnFailure || bash -c "source venv/bin/activate && ./idempotency.sh"
 fi
 if [ "$STEP" == "check_mode" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo check_mode || bash -c "source venv/bin/activate && ./check_mode.sh"
+    [ $LIST -eq 1 ] && echo check_mode haltOnFailure || bash -c "source venv/bin/activate && ./check_mode.sh"
 fi
 if [ "$STEP" == "verify" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo verify || bash -c "source venv/bin/activate && ./verify.sh"
+    [ $LIST -eq 1 ] && echo verify haltOnFailure || bash -c "source venv/bin/activate && ./verify.sh"
 fi
 if [ "$STEP" == "reboot" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo reboot || bash -c "source venv/bin/activate && ./reboot.sh"
+    [ $LIST -eq 1 ] && echo reboot haltOnFailure || bash -c "source venv/bin/activate && ./reboot.sh"
 fi
 if [ "$STEP" == "idempotency2" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo idempotency2 || bash -c "source venv/bin/activate && ./idempotency.sh"
+    [ $LIST -eq 1 ] && echo idempotency2 haltOnFailure || bash -c "source venv/bin/activate && ./idempotency.sh"
 fi
 if [ "$STEP" == "verify2" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo verify2 || bash -c "source venv/bin/activate && ./verify.sh"
+    [ $LIST -eq 1 ] && echo verify2 haltOnFailure || bash -c "source venv/bin/activate && ./verify.sh"
 fi
 if [ "$STEP" == "destroy" ] || [ "$STEP" == "all" ]; then
-[ $LIST -eq 1 ] && echo destroy || ./destroy.sh
+    [ $LIST -eq 1 ] && echo destroy alwaysRun || ./destroy.sh
 fi
 exit $result

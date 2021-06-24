@@ -10,6 +10,8 @@ apps_kube_master:
         features:
           longhorn:
             enabled: True
+          prometheus:
+            enabled: True
       info:
         helm_path: /root/helm/linux-amd64/helm
         kubeconfig: /etc/rancher/rke2/rke2.yaml

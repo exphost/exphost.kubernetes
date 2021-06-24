@@ -14,3 +14,6 @@ def test_nodes_count(host):
 
 def test_nodes_ready(host):
     assert "NotReady" not in kubectl_cmd(host, "get nodes")['stdout']
+
+def test_node_exporter_has_metrics(host):
+    assert "node_cpu_guest_seconds_total" in host.check_output("curl localhost:9100/metrics")
