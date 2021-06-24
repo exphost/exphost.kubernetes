@@ -10,9 +10,9 @@
 
     - name: setup rke2 repository 2
       yum_repository:
-        name: rancher-rke2-1-18-latest
-        description: Rancher RKE2 1.18 Latest
-        baseurl: "https://rpm.rancher.io/rke2/latest/1.18/centos/{{ ansible_distribution_major_version }}/x86_64"
+        name: rancher-rke2-1-21-latest
+        description: Rancher RKE2 1.21 Latest
+        baseurl: "https://rpm.rancher.io/rke2/latest/1.21/centos/{{ ansible_distribution_major_version }}/x86_64"
         gpgkey: https://rpm.rancher.io/public.key
         gpgcheck: true
 

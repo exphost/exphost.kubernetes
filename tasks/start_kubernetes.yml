@@ -1,9 +1,6 @@
 ---
 - block:
 
-    - name: flush handlers
-      meta: flush_handlers
-
     - name: start rke-server
       service:
         name: rke2-server

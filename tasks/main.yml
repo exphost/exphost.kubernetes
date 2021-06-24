@@ -45,3 +45,6 @@
 
   become: true
   become_user: root
+
+- name: flush handlers
+  meta: flush_handlers
