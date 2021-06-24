@@ -11,6 +11,9 @@
           longhorn: "yes"
       persistence:
         defaultClassReplicaCount: 1
+      ingress:
+        enabled: true
+        host: "longhorn.{{ domain }}"
     wait: true
     binary_path: "{{ _kube_master['kubernetes']['info']['helm_path'] }}"
     kubeconfig: "{{ _kube_master['kubernetes']['info']['kubeconfig'] }}"
