@@ -1,0 +1,21 @@
+---
+- name: install metallb
+  community.kubernetes.helm:
+    name: metallb
+    chart_ref: https://charts.bitnami.com/bitnami/metallb-2.4.2.tgz
+    release_namespace: metallb
+    create_namespace: true
+    values:
+      configInline:
+        address-pools: "{{ _kube_master['kubernetes']['configs']['features']['metallb']['address_pools'] }}"
+      controller:
+        prometheus:
+          serviceMonitor:
+            enabled: true
+      speaker:
+        prometheus:
+          serviceMonitor:
+            enabled: true
+    wait: true
+    binary_path: "{{ _kube_master['kubernetes']['info']['helm_path'] }}"
+    kubeconfig: "{{ _kube_master['kubernetes']['info']['kubeconfig'] }}"

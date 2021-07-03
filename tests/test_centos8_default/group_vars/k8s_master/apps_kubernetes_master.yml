@@ -12,6 +12,13 @@ apps_kube_master:
             enabled: True
           prometheus:
             enabled: True
+          metallb:
+            enabled: True
+            address_pools:
+              - name: default
+                addresses:
+                  - 127.5.0.100-127.5.0.200
+                protocol: layer2
       info:
         helm_path: /root/helm/linux-amd64/helm
         kubeconfig: /etc/rancher/rke2/rke2.yaml

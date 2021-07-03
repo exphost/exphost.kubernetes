@@ -48,3 +48,8 @@
 
 - name: flush handlers
   meta: flush_handlers
+
+- name: dirty wait for cluster to start
+  pause:
+    seconds: 180
+  when: app.value.kubernetes.configs.type == "worker"
