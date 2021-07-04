@@ -9,6 +9,12 @@ tls-san:
   - kubernetes-{{ app.value.kubernetes.configs.cluster_name }}-apiserver.service.consul
 node-taint:
   - "CriticalAddonsOnly=:NoSchedule"
+kube-scheduler-arg:
+  - bind-address=0.0.0.0
+  - address=0.0.0.0
+kube-controller-manager-arg:
+  - bind-address=0.0.0.0
+  - address=0.0.0.0
 {% endif %}
 {% if app.value.kubernetes.configs.labels|default(false) %}
 node-label:

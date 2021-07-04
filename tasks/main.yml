@@ -37,6 +37,10 @@
 
         - include_tasks: "configure.yml"  # configure rest of nodes
 
+        - include_tasks: config_cluster.yml
+          when: app.value.kubernetes.configs.type == "master"
+          run_once: true
+
       when: app.value.kubernetes.configs.type in  ["master", "worker"]
 
     - include_tasks: "apps.yml"

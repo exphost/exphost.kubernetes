@@ -1,0 +1,47 @@
+---
+- name: install python3-openshift
+  yum:
+    name: python3-openshift
+    state: installed
+  become: true
+  become_user: root
+
+- name: expose kube-proxy metrics
+  k8s:
+    state: present
+    definition:
+      apiVersion: helm.cattle.io/v1
+      kind: HelmChartConfig
+      metadata:
+        name: rke2-kube-proxy
+        namespace: kube-system
+      spec:
+        valuesContent: |-
+          metricsBindAddress: 0.0.0.0:10249
+    kubeconfig: /etc/rancher/rke2/rke2.yaml
+  register: _kube_proxy_config
+
+- name: get kube-proxy pods
+  k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: kube-system
+    label_selectors:
+      - k8s-app=kube-proxy
+    kubeconfig: /etc/rancher/rke2/rke2.yaml
+  register: _kube_proxy_pods
+
+- name: restart kube-proxy pods
+  vars:
+    _need_restart: "{{ _kube_proxy_config.changed }}"
+  k8s:
+    api_version: v1
+    kind: Pod
+    namespace: kube-system
+    name: "{{ pod_name }}"
+    state: absent
+    kubeconfig: /etc/rancher/rke2/rke2.yaml
+  loop: "{{ _kube_proxy_pods|json_query('resources[].metadata.name') }}"
+  loop_control:
+    loop_var: pod_name
+  when: _need_restart
