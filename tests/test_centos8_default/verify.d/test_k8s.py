@@ -20,6 +20,9 @@ def test_nodes_ready(host):
 def test_node_exporter_has_metrics(host):
     assert "node_cpu_guest_seconds_total" in host.check_output("curl localhost:9100/metrics")
 
+def test_node_exporter_has_filesystem_metrics(host):
+    assert "node_filesystem_free_bytes" in host.check_output("curl localhost:9100/metrics")
+
 def test_metallb_service_ip(host):
     kubectl_cmd(host, "create service loadbalancer test-service --tcp=80:80")
     time.sleep(2)

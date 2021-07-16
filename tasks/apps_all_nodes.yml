@@ -1,0 +1,5 @@
+---
+- include_tasks: apps_all_nodes_prometheus.yml
+  vars:
+    _kube_master: "{{ hostvars|dict2items|get_kubernetes_master(app.value.kubernetes.configs.cluster_name) }}"
+  when: _kube_master['kubernetes']['configs']['features']['prometheus']['enabled']|default(false)

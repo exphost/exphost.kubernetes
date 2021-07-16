@@ -21,6 +21,18 @@
           - key: "CriticalAddonsOnly"
             operator: "Exists"
             effect: "NoSchedule"
+        extraArgs:
+          collector.filesystem.ignored-mount-points: "^/(dev|proc|sys|var/lib/docker/.+|run/ns/.+|run/k3s/containerd|run|var/lib/kubelet/.+)($|/)"
+          path.rootfs: "/host/root"
+          log.level: "debug"
+        extraVolumes:
+          - name: rootfs
+            hostPath:
+              path: /
+        extraVolumeMounts:
+          - name: rootfs
+            mountPath: /host/root
+            readOnly: true
       alertmanager:
         ingress:
           enabled: true

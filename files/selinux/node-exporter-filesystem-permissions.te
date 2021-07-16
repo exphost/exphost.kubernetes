@@ -1,0 +1,13 @@
+
+module node-exporter-filesystem-permissions 1.0;
+
+require {
+	type init_t;
+	type container_t;
+	class dir search;
+	class file { open read };
+}
+
+#============= container_t ==============
+allow container_t init_t:dir search;
+allow container_t init_t:file { open read };

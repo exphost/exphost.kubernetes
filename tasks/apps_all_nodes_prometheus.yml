@@ -1,0 +1,22 @@
+---
+- name: create policies directory
+  file:
+    path: /etc/selinux/policies
+    state: directory
+    mode: 0755
+- name: copy selinux policies
+  copy:
+    src: "{{ _policy }}"
+    dest: "/etc/selinux/policies"
+    mode: 0644
+  loop:
+    - selinux/node-exporter-filesystem-permissions.pp
+    - selinux/node-exporter-filesystem-permissions.te
+  loop_control:
+    loop_var: _policy
+  register: _policy_copy
+- name: apply policy
+  vars:
+    need_run: "{{ _policy_copy.changed }}"
+  command: semodule -i /etc/selinux/policies/node-exporter-filesystem-permissions.pp
+  when: need_run

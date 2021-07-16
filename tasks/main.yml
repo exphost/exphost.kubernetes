@@ -47,6 +47,8 @@
       when: app.value.kubernetes.configs.type == "apps"
       run_once: true
 
+    - include_tasks: "apps_all_nodes.yml"
+
   become: true
   become_user: root
 
