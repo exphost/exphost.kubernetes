@@ -2,6 +2,10 @@
 - name: debug
   debug:
     msg: "Jeste kubernetese"
+
+- name: update facts
+  setup:
+
 - name: set default flags
   set_fact:
     _kubernetes_cluster_exists: false
