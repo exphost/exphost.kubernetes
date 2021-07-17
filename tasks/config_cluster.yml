@@ -1,11 +1,4 @@
 ---
-- name: install python3-openshift
-  yum:
-    name: python3-openshift
-    state: installed
-  become: true
-  become_user: root
-
 - name: expose kube-proxy metrics
   k8s:
     state: present

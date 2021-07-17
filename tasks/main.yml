@@ -59,7 +59,20 @@
 - name: flush handlers
   meta: flush_handlers
 
-- name: dirty wait for cluster to start
-  pause:
-    seconds: 180
+- name: wait for ingress to start
+  vars:
+    _kube_master: "{{ hostvars|dict2items|get_kubernetes_master(app.value.kubernetes.configs.cluster_name) }}"
+  community.kubernetes.k8s_info:
+    kind: Pod
+    namespace: kube-system
+    label_selectors:
+      - "app.kubernetes.io/name=rke2-ingress-nginx"
+    kubeconfig: "{{ _kube_master['kubernetes']['info']['kubeconfig'] }}"
+  delegate_to: "{{ _kubernetes_nodes.stdout_lines[0] }}"
+  register: _ingress_pods
   when: app.value.kubernetes.configs.type == "worker"
+  until: _ingress_pods['resources'][0]['status']['containerStatuses'][0]['ready'] | default(false)
+  retries: 300
+  delay: 10
+  become: true
+  become_user: root

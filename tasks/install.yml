@@ -48,5 +48,10 @@
       vars:
         _kube_master: "{{ hostvars|dict2items|get_kubernetes_master(app.value.kubernetes.configs.cluster_name) }}"
       when: _kube_master['kubernetes']['configs']['features']['longhorn']['enabled']|default(false)
+
+    - name: install python3-openshift
+      yum:
+        name: python3-openshift
+        state: installed
   become: true
   become_user: root
